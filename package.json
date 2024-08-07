@@ -21,5 +21,8 @@
     "dat.gui": "^0.7.9",
     "parcel": "^2.12.0",
     "three": "^0.167.1"
+  },
+  "devDependencies": {
+    "buffer": "^6.0.3"
   }
 }

@@ -4,8 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grapher function</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #selector {
+            top: 0;
+            left: 0;
+            width: fit-content;
+            height: 30px;
+            border: none;
+            font-size: 1.1rem;
+            padding: 0 10px;
+            position: absolute;
+        }
+
+    </style>
 </head>
 <body>
+    <select
+    name="selector"
+    id="selector"
+    ></select>
     <script type="module" src="./src/main.js"></script>
 </body>
 </html>
