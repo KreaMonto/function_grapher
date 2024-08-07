@@ -32,3 +32,6 @@ To start the development server, use the following command:
 npm run start
 ```
 This will start the development server and open the simulation in your default web browser.
+
+## License
+This project is licensed under the [MIT License](LICENSE).
