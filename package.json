@@ -1,0 +1,25 @@
+{
+  "name": "grapher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel ./index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KreaMonto/function_grapher.git"
+  },
+  "author": "KreaMonto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KreaMonto/function_grapher/issues"
+  },
+  "homepage": "https://github.com/KreaMonto/function_grapher#readme",
+  "dependencies": {
+    "dat.gui": "^0.7.9",
+    "parcel": "^2.12.0",
+    "three": "^0.167.1"
+  }
+}
