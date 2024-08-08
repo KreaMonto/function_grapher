@@ -59,66 +59,65 @@ camera.lookAt(axesHelper.position)
 
 // Adding a plane
 // -------------------------
-// const planeGeometry = new THREE.PlaneGeometry(100, 100)
-// const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide, opacity: 0.1 })
-// const plane = new THREE.Mesh(planeGeometry, planeMaterial)
-// plane.rotation.x = Math.PI / 2
-// scene.add(plane)
+const planeGeometry = new THREE.PlaneGeometry(5, 5, 100, 100)
+const planeMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, opacity: 0.1 })
+graph = new THREE.Mesh(planeGeometry, planeMaterial)
+graph.rotation.x = -Math.PI / 2
+graph.position.y = -1
+graph.castShadow = true
+graph.receiveShadow = true
+scene.add(graph)
 
-
-// Data generation
+// defining colors
 // -------------------------
-function generatePoints(func) {
-    const points = [];
-    const step = 0.1;
-    const range = 2;
+const rainbowColors = [
+    new THREE.Color(0xff0000), // Rojo
+    new THREE.Color(0xffa500), // Naranja
+    new THREE.Color(0x00ff00), // Verde
+    new THREE.Color(0x0000ff)  // Azul
+];
 
-    for (let x = -range; x <= range; x += step) {
-        for (let y = -range; y <= range; y += step) {
-            const z = func(y, x);
-            points.push(new THREE.Vector3(x, z, y));
-        }
-    }
 
-    return points;
+// Data handling
+// -------------------------
+const vertices = planeGeometry.attributes.position.array;
+const colors = new Float32Array(vertices.length); // colors
+
+const width = planeGeometry.parameters.width;
+const height = planeGeometry.parameters.height;
+const widthSegments = planeGeometry.parameters.widthSegments;
+const heightSegments = planeGeometry.parameters.heightSegments;
+const stepX = width / widthSegments;
+const stepY = height / heightSegments;
+
+for (let i = 0; i < vertices.length; i += 3) {
+    const x = (i / 3 % (widthSegments + 1)) * stepX - width / 2;
+    const y = Math.floor(i / 3 / (widthSegments + 1)) * stepY - height / 2;
+    const z = func(x, y);
+    vertices[i + 2] = z; 
+
+    // Asign colors
+    const colorIndex = Math.floor((i / 3) / ((widthSegments + 1) * (heightSegments + 1)) * rainbowColors.length);
+    const color = rainbowColors[colorIndex];
+    colors[i] = color.r;
+    colors[i + 1] = color.g;
+    colors[i + 2] = color.b;
 }
 
-// Geometry creation
-// ---------------------------------------
-function createGeometry(points, normal) {
-    const geometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array(points.length * 3);
-    const colors = new Float32Array(points.length * 3);
+planeGeometry.attributes.position.needsUpdate = true;
+planeGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3)); 
 
-    points.forEach((point, index) => {
-        vertices[index * 3] = point.x; 
-        vertices[index * 3 + 1] = point.y;
-        vertices[index * 3 + 2] = point.z;
 
-        const color = {
-            r: Math.random(),
-            g: Math.random(),
-            b: Math.random()
-        };
+// Lights
+// -------------------------
+const ambience = new THREE.AmbientLight(0x404040)
+scene.add(ambience)
 
-        colors[index * 3] = color.r;
-        colors[index * 3 + 1] = color.g;
-        colors[index * 3 + 2] = color.b;
-    });
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-    const material = new THREE.MeshBasicMaterial({ vertexColors: true, wireframe: true });
-    return new THREE.Mesh(geometry, material);
-}
-
-// Creating the MESH and adding to the scene
-// ---------------------------------------
-const points = generatePoints(func);
-graph = createGeometry(points);
-scene.add(graph);
-
+const light = new THREE.DirectionalLight(0xffffff, 1)
+light.position.set(0, 20, 20)
+light.castShadow = true
+light.lookAt(axesHelper.position)
+scene.add(light)
 
 // animation and render
 // -------------------------
@@ -146,7 +145,7 @@ window.addEventListener('resize', () => {
 // Functions to be graphed
 // -------------------------------------
 function dot() {
-    return Math.PI / 30;
+    return Math.PI / 2;
 }
 
 function cone(x, y) {
@@ -171,11 +170,7 @@ functionGraper(dot)
 // adding an element to select wich function to show
 // ----------------------------------
 const select = document.getElementById('selector')
-select.innerHTML = `
-<option value="none">Select a function...</option>
-<option value="cone">Cone</option>
-<option value="hyperbolicParaboloid">Hyperbolic Paraboloid</option>
-`
+
 console.log(select)
 
 select.addEventListener('change', (e) => {
@@ -183,6 +178,7 @@ select.addEventListener('change', (e) => {
     console.log(func)
     if (graph) {
         scene.remove(graph)
+        scene.background = 0x000000
         graph = null
     }
     // if func is undefined then renderizar cube
